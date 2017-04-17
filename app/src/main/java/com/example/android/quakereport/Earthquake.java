@@ -4,12 +4,12 @@ public class Earthquake {
 
     private String magnitude;
     private String place;
-    private String time;
+    private long timeInMillis;
 
-    public Earthquake(String magnitude, String place, String time) {
+    public Earthquake(String magnitude, String place, long time) {
         this.magnitude = magnitude;
         this.place = place;
-        this.time = time;
+        this.timeInMillis = time;
     }
 
     public String getMagnitude() {
@@ -20,7 +20,7 @@ public class Earthquake {
         return place;
     }
 
-    public String getTime() {
-        return time;
+    public long getTimeInMillis() {
+        return timeInMillis;
     }
 }
