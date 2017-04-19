@@ -33,13 +33,14 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         TextView magnitude = (TextView) listViewItem.findViewById(R.id.magnitude);
         TextView place = (TextView) listViewItem.findViewById(R.id.place);
+        TextView primaryLocation = (TextView) listViewItem.findViewById(R.id.primaryLocation);
         TextView date = (TextView) listViewItem.findViewById(R.id.date);
         TextView time = (TextView) listViewItem.findViewById(R.id.time);
 
         if (currentEarthQuake != null) {
             magnitude.setText(currentEarthQuake.getMagnitude());
-            place.setText(currentEarthQuake.getPlace());
-
+            place.setText(formatPlace(currentEarthQuake.getPlace()));
+            primaryLocation.setText(formatCity(currentEarthQuake.getPlace()));
             Date dateObject = new Date(currentEarthQuake.getTimeInMillis());
             date.setText(formatDate(dateObject));
             time.setText(formatTime(dateObject));
@@ -56,5 +57,25 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
     private String formatTime(Date dateObject) {
         SimpleDateFormat dateFormatter = new SimpleDateFormat("hh:mm");
         return dateFormatter.format(dateObject);
+    }
+
+    private String formatPlace(String data) {
+        String separator = " of ";
+        if (data.contains(separator)) {
+            String[] place = data.split(separator);
+            return place[0] + separator;
+        }
+
+        return getContext().getString(R.string.near_the);
+    }
+
+    private String formatCity(String data) {
+        String separator = " of ";
+        if (data.contains(separator)) {
+            String[] place = data.split(separator);
+            return place[1];
+        }
+
+        return data;
     }
 }
