@@ -1,9 +1,11 @@
 package com.example.android.quakereport;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +42,10 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         if (currentEarthQuake != null) {
             magnitude.setText(formatMagnitude(currentEarthQuake.getMagnitude()));
+            GradientDrawable magnitudeCircle = (GradientDrawable) magnitude.getBackground();
+            int magnitudeColor = getMagnitudeColor(currentEarthQuake.getMagnitude());
+            magnitudeCircle.setColor(magnitudeColor);
+
             place.setText(formatPlace(currentEarthQuake.getPlace()));
             primaryLocation.setText(formatCity(currentEarthQuake.getPlace()));
             Date dateObject = new Date(currentEarthQuake.getTimeInMillis());
@@ -48,6 +54,46 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         }
 
         return listViewItem;
+    }
+
+    private int getMagnitudeColor(double magnitude) {
+        int magnitudeColorBackgroundId;
+        int magnitudeFloor = (int) Math.floor(magnitude);
+        switch (magnitudeFloor) {
+            case 0:
+            case 1:
+                magnitudeColorBackgroundId = R.color.magnitude1;
+                break;
+            case 2:
+                magnitudeColorBackgroundId = R.color.magnitude2;
+                break;
+            case 3:
+                magnitudeColorBackgroundId = R.color.magnitude3;
+                break;
+            case 4:
+                magnitudeColorBackgroundId = R.color.magnitude4;
+                break;
+            case 5:
+                magnitudeColorBackgroundId = R.color.magnitude5;
+                break;
+            case 6:
+                magnitudeColorBackgroundId = R.color.magnitude6;
+                break;
+            case 7:
+                magnitudeColorBackgroundId = R.color.magnitude7;
+                break;
+            case 8:
+                magnitudeColorBackgroundId = R.color.magnitude8;
+                break;
+            case 9:
+                magnitudeColorBackgroundId = R.color.magnitude9;
+                break;
+            default:
+                magnitudeColorBackgroundId = R.color.magnitude10plus;
+                break;
+        }
+
+        return ContextCompat.getColor(getContext(), magnitudeColorBackgroundId);
     }
 
     private String formatDate(Date dateObject) {
