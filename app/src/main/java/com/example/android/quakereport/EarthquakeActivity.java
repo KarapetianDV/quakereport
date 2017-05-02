@@ -17,6 +17,7 @@ package com.example.android.quakereport;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -28,31 +29,46 @@ import java.util.ArrayList;
 public class EarthquakeActivity extends AppCompatActivity {
 
     public static final String TAG = EarthquakeActivity.class.getName();
+    private static final String USGS_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&limit=10";
+    private ListView earthquakeListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
 
+        earthquakeListView = (ListView) findViewById(R.id.list);
         // Create a fake list of earthquake locations.
-        ArrayList<Earthquake> earthquakes = QueryUtils.extractEarthquakes();
+        new EarthquakeListTask().execute(USGS_URL);
 
         // Find a reference to the {@link ListView} in the layout
-        ListView earthquakeListView = (ListView) findViewById(R.id.list);
+    }
 
-        final EarthquakeAdapter earthquakeAdapter = new EarthquakeAdapter(this, R.layout.list_item, earthquakes);
+    private class EarthquakeListTask extends AsyncTask<String, Void, ArrayList<Earthquake>> {
 
-        earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Earthquake currentEarthquake = earthquakeAdapter.getItem(position);
-                Uri earthquakeUri = Uri.parse(currentEarthquake.getUrl());
-                Intent intent = new Intent(Intent.ACTION_VIEW, earthquakeUri);
-                startActivity(intent);
-            }
-        });
-        // Set the adapter on the {@link ListView}
-        // so the list can be populated in the user interface
-        earthquakeListView.setAdapter(earthquakeAdapter);
+
+        @Override
+        protected ArrayList<Earthquake> doInBackground(String... params) {
+            return QueryUtils.extractEarthquakes(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Earthquake> earthquakes) {
+            final EarthquakeAdapter earthquakeAdapter = new EarthquakeAdapter(EarthquakeActivity.this, R.layout.list_item, earthquakes);
+
+            earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Earthquake currentEarthquake = earthquakeAdapter.getItem(position);
+                    Uri earthquakeUri = Uri.parse(currentEarthquake.getUrl());
+                    Intent intent = new Intent(Intent.ACTION_VIEW, earthquakeUri);
+                    startActivity(intent);
+                }
+            });
+
+            // Set the adapter on the {@link ListView}
+            // so the list can be populated in the user interface
+            earthquakeListView.setAdapter(earthquakeAdapter);
+        }
     }
 }
